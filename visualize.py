@@ -2,31 +2,12 @@ import mne
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import spectrogram
-import utils_eeg
 
 # -----------------------------------------------------
-# 1. Load data
-# -----------------------------------------------------
-USE_FIF = True
-FILE_NAME = "measure-2025-11-26_12-27-16-raw.fif"
-epochs = utils_eeg.load_data(FILE_NAME, USE_FIF)
-
-# if USE_FIF:
-#     raw = mne.io.read_raw_fif(FILE_NAME, preload=True)
-#     raw.set_eeg_reference("average")
-#     events, event_id = mne.events_from_annotations(raw)
-#     epochs = mne.Epochs(
-#         raw,                # The Raw data object
-#         events,             # The events array derived from annotations
-#         event_id=event_id,  # The ID mapping derived from annotations
-#         # tmin=T_MIN,         # Start time of the epoch
-#         # tmax=T_MAX,         # End time of the epoch
-#         preload=True,       # Load all epoched data into memory
-#     )
-#     del raw
-# else:
-#     epochs = mne.read_epochs(FILE_NAME, preload=True)
-
+# 1. Load epochs
+# -----------------------------------------------------hs.plot(scalings="auto", show=True)
+# Ensure the matplotlib event loop runs and block until the user closes the window
+epochs = mne.read_epochs("measure-2025-11-26_22:10:29-epo.fif", preload=True)
 epochs.plot(scalings="auto", show=True)
 # Example mapping (adjust if your file already stores event_id)
 event_dict = {"open_eye": 1, "closed_eye": 2}

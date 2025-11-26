@@ -53,7 +53,7 @@ def main():
 
         start_time = int(time.time())
         current_epoch_data = []
-        while (int(time.time()) - start_time) < duration:
+        while (int(time.time()) - start_time) <= duration + 1:
             if board_shim.get_board_data_count() >= (current_num_points + num_points):
                 current_num_points = board_shim.get_board_data_count()
                 data = board_shim.get_current_board_data(num_points)
@@ -66,22 +66,23 @@ def main():
         if event_code != 0:
             # Concatenate chunks along time axis
             # Shape: (8, total_samples_in_epoch)
-            epoch_data = np.concatenate(current_epoch_data, axis=1)
-            raw_epochs.append(epoch_data)
-            print(f"{epoch_data.shape = }")
-            # # Rescale each channel to [-50, 50] range
-            # rescaled_data = np.zeros_like(epoch_data)
-            # for ch_idx in range(epoch_data.shape[0]):
-            #     ch_data = epoch_data[ch_idx, :]
-            #     ch_min = ch_data.min()
-            #     ch_max = ch_data.max()
-            #     # Normalize to [0, 1] then scale to [-50, 50]
-            #     if ch_max - ch_min > 0:
-            #         rescaled_data[ch_idx, :] = ((ch_data - ch_min) / (ch_max - ch_min)) * 100 - 50
-            #     else:
-            #         rescaled_data[ch_idx, :] = 0
+            raw_data = np.concatenate(current_epoch_data, axis=1)
+            # raw_epochs.append(raw_data)
+            # Rescale each channel to [-50, 50] range
+            rescaled_data = np.zeros_like(raw_data)
+            for ch_idx in range(raw_data.shape[0]):
+                ch_data = raw_data[ch_idx, :]
+                ch_min = ch_data.min()
+                ch_max = ch_data.max()
+                # Normalize to [0, 1] then scale to [-50, 50]
+                if ch_max - ch_min > 0:
+                    rescaled_data[ch_idx, :] = ((ch_data - ch_min) / (ch_max - ch_min)) * 100 - 50
+                else:
+                    rescaled_data[ch_idx, :] = 0
             
-            # raw_epochs.append(rescaled_data)
+            print(f"{rescaled_data.shape = }")
+            rescaled_data = rescaled_data[:, :duration * sampling_rate]
+            raw_epochs.append(rescaled_data)
 
     board_shim.release_session()
 
